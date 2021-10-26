@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/filter"
+        android:title="过滤"
+		android:showAsAction="always"
+		android:actionViewClass="android.widget.SearchView"/>
+    <item
+		android:id="@+id/global"
+		android:title="Global"/>
+	<item
+		android:id="@+id/system"
+		android:title="System"/>
+	<item
+		android:id="@+id/secure"
+		android:title="Secure"/>
+</menu>
