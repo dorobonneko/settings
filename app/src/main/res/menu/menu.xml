@@ -14,4 +14,13 @@
 	<item
 		android:id="@+id/secure"
 		android:title="Secure"/>
+	<item
+		android:id="@+id/insert"
+		android:title="插入"/>
+	<item android:id="@+id/reply"
+		android:title="撤销删除"
+		android:enabled="false"/>
+	<item
+		android:id="@+id/test"
+		android:title="测试"/>
 </menu>

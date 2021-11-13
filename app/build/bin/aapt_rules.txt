@@ -1,3 +1,6 @@
+# view AndroidManifest.xml #generated:41
+-keep class com.moe.settings.AutoBootActivity { <init>(...); }
+
 # view AndroidManifest.xml #generated:25
 -keep class com.moe.settings.MainActivity { <init>(...); }
 

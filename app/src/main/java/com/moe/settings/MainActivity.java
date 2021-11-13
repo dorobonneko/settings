@@ -19,13 +19,20 @@ import android.content.Intent;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView;
+import android.widget.Adapter;
+import java.util.Stack;
 
-public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,SearchView.OnCloseListener{ 
+public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,SearchView.OnCloseListener,ListView.OnItemLongClickListener{ 
 private List<String[]> data=new ArrayList<>();
 private SettingAdapter sa;
 private String mode;
 private SearchView sv;
-private MenuItem searchMenu;
+private MenuItem searchMenu,reply;
+private Stack<String[]> delete=new Stack<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +55,11 @@ private MenuItem searchMenu;
 		}
         sa=new SettingAdapter(data);
 		setListAdapter(sa);
+		getListView().setOnItemLongClickListener(this);
 		change("system");
     }
 	private void change(String mode){
+		if(mode==null)return;
 		this.mode=mode;
 		setTitle(mode);
 		Cursor cursor=getContentResolver().query(Uri.parse("content://settings/"+mode),null,null,null,null);
@@ -59,6 +68,8 @@ private MenuItem searchMenu;
 			data.add(new String[]{cursor.getString(cursor.getColumnIndex("name")),cursor.getString(cursor.getColumnIndex("value"))});
 		}
 		sa.getFilter().filter(sv==null?null:sv.getQuery());
+		if(reply!=null)
+		reply.setEnabled(!delete.isEmpty());
 	}
 
 	@Override
@@ -70,6 +81,9 @@ private MenuItem searchMenu;
 		sv.setIconified(true);
 		sv.setOnQueryTextListener(this);
 		sv.setOnCloseListener(this);
+		reply=menu.findItem(R.id.reply);
+		reply.setEnabled(!delete.isEmpty());
+	
 		return true;
 	}
 
@@ -78,7 +92,6 @@ private MenuItem searchMenu;
 		switch(item.getItemId()){
 			case R.id.global:
 				change("global");
-				
 				break;
 			case R.id.system:
 				change("system");
@@ -86,6 +99,43 @@ private MenuItem searchMenu;
 		    case R.id.secure:
 				change("secure");
 				break;
+		    case R.id.test:
+				//startActivity(new Intent(this,AutoBootActivity.class));
+				break;
+		    case R.id.insert:
+				View v=LayoutInflater.from(this).inflate(R.layout.insert_view,null);
+				final EditText name=v.findViewById(R.id.name);
+				final EditText value=v.findViewById(R.id.value);
+				new AlertDialog.Builder(this).setTitle("插入数据").setView(v).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+
+						@Override
+						public void onClick(DialogInterface p1, int p2) {
+							String key=name.getText().toString().trim();
+							if(TextUtils.isEmpty(key)){
+								Toast.makeText(getApplicationContext(),"名称不能为空",Toast.LENGTH_SHORT).show();
+								return;
+							}
+							ContentValues cv=new ContentValues();
+							cv.put("name",key);
+							String val=value.getText().toString().trim();
+							if(!TextUtils.isEmpty(val))
+								cv.put("value",val);
+							getContentResolver().insert(Uri.parse("content://settings/"+mode),cv);
+							//item[1]=cv.getAsString("value");
+							change(mode);
+						}
+					}).show();
+				break;
+				case R.id.reply:
+					//撤销删除
+					String[] k_v=delete.pop();
+				ContentValues cv=new ContentValues();
+				cv.put("name",k_v[0]);
+				cv.put("value",k_v[1]);
+				getContentResolver().insert(Uri.parse("content://settings/"+mode),cv);
+				change(mode);
+				Toast.makeText(this,"已恢复："+k_v[0],Toast.LENGTH_SHORT).show();
+					break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -132,6 +182,28 @@ private MenuItem searchMenu;
 			sv.onActionViewCollapsed();
 		return true;
 	}
+
+	@Override
+	public void finish() {
+		moveTaskToBack(true);
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> p1, View p2, int position, long p4) {
+		if(mode==null)return true;
+		final String[] item=(String[]) p1.getAdapter().getItem(position);
+		
+		new AlertDialog.Builder(this).setTitle("删除").setMessage(item[0]).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface p1, int p2) {
+					getContentResolver().delete(Uri.parse("content://settings/"+mode),"name=?",new String[]{item[0]});
+					delete.push(item);
+					change(mode);
+					}}).show();
+		return true;
+	}
+
 
 
 
