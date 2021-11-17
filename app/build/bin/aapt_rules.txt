@@ -4,3 +4,6 @@
 # view AndroidManifest.xml #generated:25
 -keep class com.moe.settings.MainActivity { <init>(...); }
 
+# view AndroidManifest.xml #generated:48
+-keep class com.moe.settings.PerformanceTile { <init>(...); }
+
