@@ -25,6 +25,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView;
 import android.widget.Adapter;
 import java.util.Stack;
+import android.graphics.drawable.ColorDrawable;
+import android.util.TypedValue;
 
 public class MainActivity extends ListActivity implements SearchView.OnQueryTextListener,SearchView.OnCloseListener,ListView.OnItemLongClickListener{ 
 private List<String[]> data=new ArrayList<>();
@@ -36,6 +38,8 @@ private Stack<String[]> delete=new Stack<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		getListView().setDivider(new ColorDrawable());
+		getListView().setDividerHeight((int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,16,getResources().getDisplayMetrics()));
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 
 				@Override
