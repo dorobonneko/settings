@@ -1,0 +1,9 @@
+# Referenced at /storage/emulated/0/AppProjects/settings/app/build/bin/injected/AndroidManifest.xml:23
+-keep class com.moe.settings.AutoBootActivity { <init>(); }
+# Referenced at /storage/emulated/0/AppProjects/settings/app/build/bin/injected/AndroidManifest.xml:11
+-keep class com.moe.settings.MainActivity { <init>(); }
+# Referenced at /storage/emulated/0/AppProjects/settings/app/build/bin/injected/AndroidManifest.xml:27
+-keep class com.moe.settings.PerformanceTile { <init>(); }
+# Referenced at /storage/emulated/0/AppProjects/settings/app/src/main/res/menu/menu.xml:3
+-keep class android.widget.SearchView { <init>(...); }
+
